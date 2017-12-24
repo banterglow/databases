@@ -77,8 +77,38 @@ module.exports = {
   },
 
   users: {
-    // Ditto as above.
-    get: function () {},
-    post: function () {}
+    get: function (res, headers) {
+      var checkUsername = `SELECT userid FROM users WHERE username = '${data.username}'`;
+      db.con.query(checkUsername, function (err, dataArray) {
+        if (err) { throw err; }
+
+        if (result.length) {
+          var data = { results: dataArray };
+          res.writeHead(200, headers);
+          res.end(JSON.stringify(data));
+        } else {
+          res.writeHead(404, headers);
+          res.end();
+        }
+      });
+    },
+    post: function (data, res, headers) {
+      var checkUsername = `SELECT userid FROM users WHERE username = '${data.username}'`;
+      var userInsert = `INSERT INTO users (username) VALUES ('${data.username}')`;
+      db.con.query(checkUsername, function (err, result) {
+        if (err) { throw err; }
+        let userId;
+
+        if (result.length) {
+          res.writeHead(201, headers);
+          res.end();
+        } else {
+          db.con.query(userInsert, function (err, result) {
+            if (err) { throw err; }
+            console.log('1 user inserted');
+          });
+        }
+      });
+    }
   }
 };

@@ -38,9 +38,25 @@ module.exports = {
 
   users: {
     // Ditto as above
-    get: function (req, res) {},
-    post: function (req, res) {},
-    options: function (req, res) {}
+    get: function (req, res) {
+      models.users.get(res, headers);
+    },
+    post: function (req, res) {
+      var content = '';
+      req.on('data', function (data) {
+        // Append data.
+        content += data;
+      });
+      req.on('end', function (data) {
+        // Assuming, we're receiving JSON, parse the string into a JSON object to return.
+        var data = JSON.parse(content);
+        models.users.post(data, res, headers);
+      });
+    },
+    options: function (req, res) {
+      res.writeHead(200, headers);
+      res.end();
+    }
   }
 };
 
